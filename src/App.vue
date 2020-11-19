@@ -27,6 +27,13 @@
   </div>
 </template>
 
+<script>
+export default {
+  mounted(){
+    this.saveErrors('errror will be registered')
+  }
+}
+</script>
 <style lang="scss">
 $yellow: #f6e770;
 $gray: #56585a;

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import CommentsRootContainer from './CommentsRootContainer'
 import { uuid } from './helpers'
-
+import axios from "axios"
 const optionsDefaults = {
     // Retrieves the current logged in user that is posting a comment
     commenterSelector() {
@@ -23,6 +23,7 @@ const optionsDefaults = {
             // It's there to illustrate what could be done in the callback of a remote call
             let comments = this.targets[editted.targetId].comments
             comments.splice(comments.indexOf(editted), 1, editted);
+            console.log(comments)
         },
         onRemove(removed) {
             let comments = this.targets[removed.targetId].comments
@@ -33,13 +34,21 @@ const optionsDefaults = {
 
 export default {
     install(vue, opts) {
-
+        const { github_api_token, github_repo, ...rOptions } = opts;
+        console.log(github_api_token,github_repo)
         // Merge options argument into options defaults
-        const options = { ...optionsDefaults, ...opts }
-
+        const options = { ...optionsDefaults, ...rOptions }
+        const axiosObj = axios.create({
+            baseURL: 'https://api.github.com',
+            headers: {
+                Authorization: `token ${github_api_token}`
+            }
+        })
+        // const response = await axiosObj.get('/users/rajasekhar02')
+        // console.log(response)
         // Create plugin's root Vue instance
         const root = new Vue({
-            data: { targets: options.data.targets },
+            data: { targets: options.data.targets, axiosObj,github_repo },
             render: createElement => createElement(CommentsRootContainer)
         })
 
@@ -53,7 +62,9 @@ export default {
 
         // Make the root instance available in all components
         vue.prototype.$commentsOverlay = root
-
+        vue.prototype. saveErrors = function(params) {
+                console.log(params)
+            }  
         // Register custom directive tha enables commenting on any element
         vue.directive('comments-enabled', {
             bind(el, binding) {
@@ -78,5 +89,13 @@ export default {
                 })
             }
         })
+        // vue.mixin({
+        //     methods: {
+        //       saveErrors(params) {
+        //         console.log(params)
+        //     }      
+        //     }          
+        // })
+       
     }
 }

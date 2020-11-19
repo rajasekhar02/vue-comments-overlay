@@ -74,6 +74,7 @@ export default {
       this.creating.text = this.text;
       this.creating.timestamp = new Date();
       this._emit("create", this.creating);
+      console.log(this.$root.axiosObject)
       this._resetState();
     },
     cancel() {
@@ -84,7 +85,7 @@ export default {
       this._resetState();
     },
     _emit(evt, data) {
-      this.$root.$emit(evt, data);
+      this.$emit(evt, data);
     },
     _resetState() {
       this.text = null;
